@@ -18,13 +18,13 @@ export default () => {
       }
     ) {
       const tempLocation = await cafs.tempDir()
-      await execGit(['clone', resolution.repo, tempLocation])
+      await execGit(['clone', '--recurse-submodules', resolution.repo, tempLocation])
       await execGit(['checkout', resolution.commit], { cwd: tempLocation })
       await preparePackage(tempLocation)
       // removing /.git to make directory integrity calculation faster
       await rimraf(path.join(tempLocation, '.git'))
       const filesIndex = await cafs.addFilesFromDir(tempLocation, opts.manifest)
-      return { filesIndex }
+      return { filesIndex, tempLocation }
     },
   }
 }

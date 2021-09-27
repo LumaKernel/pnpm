@@ -44,3 +44,26 @@ test('fetch a package from Git that has a prepare script', async () => {
   )
   expect(filesIndex[`dist${path.sep}index.js`]).toBeTruthy()
 })
+
+test('fetch2', async () => {
+  const cafsDir = tempy.directory()
+  const fetch = createFetcher().git
+  const manifest = pDefer<DependencyManifest>()
+  const { filesIndex } = await fetch(
+    createCafsStore(cafsDir),
+    {
+      commit: 'c6640c5ae73aeb5f0bc7b93d916a93eea7883c1c',
+      repo: 'https://github.com/LumaKernel/pnpm-issue.git',
+      type: 'git',
+    },
+    {
+      manifest,
+    }
+  )
+  console.log(filesIndex)
+  expect(filesIndex['package.json']).toBeTruthy()
+  expect(filesIndex['package.json'].writeResult).toBeTruthy()
+  expect(filesIndex['v1_2_3/version.txt']).toBeTruthy()
+  const version = (await manifest.promise).version
+  expect(version).toEqual('v2.0.0-next')
+})
